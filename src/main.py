@@ -1,15 +1,15 @@
 
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
- 
- 
-class Ticket:
-      def __init__(self, id: int, title: str, description: str):
-          self.id = id
-          self.title = title
-          self.description = description
-          
+
+
+class Ticket(BaseModel):
+    id: int
+    title: str
+    description: str
+
  
 @app.get('/')
 def welcome():
@@ -22,22 +22,27 @@ def addTicket(Item:Ticket):
     description= Item.description
     Ticket(id, title, description
             )
-    return {"message": "Ticket added successfully","ticket":Ticket}
+#     return {"message": "Ticket added successfully","ticket":Ticket}
 
-@app.get('/tickets')
-def get_tickets():
-    return {"tickets": "List of all tickets", "data": Ticket}
+# @app.get('/tickets')
+# def get_tickets():
+#     return {"tickets": "List of all tickets", "data": Ticket}
  
-@app.get("/ticket/:id")
-def get_ticket(id: int):
-    return {
-        "ticket data:" : Ticket.id == id
-    }
+# @app.get("/ticket/:id")
+# def get_ticket(id: int):
+#     return {
+#         "ticket data:" : Ticket.id == id
+#     }
     
-app.put("/update/:id")
-def update_ticket(id: int, item: Ticket):
-    for 
-    return {
-        "message": "Ticket updated successfully",
-        "ticket data": Ticket.id == id
-    }
+# @app.put("/update/:id")
+# def update_ticket(id: int, item: Ticket):
+#     for id in Ticket:
+#         if(Ticket.id == id):
+#             Ticket.title = item.title
+#             Ticket.description = item.description
+#             break
+#     return {
+#         "message": "Ticket updated successfully",
+#         "ticket data": Ticket.id == id
+#     }
+    
