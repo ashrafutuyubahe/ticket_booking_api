@@ -17,32 +17,44 @@ def welcome():
 
 @app.post('/addTicket')
 def addTicket(Item:Ticket):
-    id= Item.id
-    title= Item.title
-    description= Item.description
-    Ticket(id, title, description
-            )
-#     return {"message": "Ticket added successfully","ticket":Ticket}
+    Ticket.append(Item)
 
-# @app.get('/tickets')
-# def get_tickets():
-#     return {"tickets": "List of all tickets", "data": Ticket}
- 
-# @app.get("/ticket/:id")
-# def get_ticket(id: int):
-#     return {
-#         "ticket data:" : Ticket.id == id
-#     }
+    return {"message": "Ticket added successfully","ticket":Item}
+
+@app.get('/tickets')
+def get_tickets():
+    return {"tickets": "List of all tickets", "data": Ticket}
+
+@app.get("/ticket/:id")
+def get_ticket(id: int):
+    if(Ticket.id != id):
+        return {
+            "message": "Ticket not found"
+        }
     
-# @app.put("/update/:id")
-# def update_ticket(id: int, item: Ticket):
-#     for id in Ticket:
-#         if(Ticket.id == id):
-#             Ticket.title = item.title
-#             Ticket.description = item.description
-#             break
-#     return {
-#         "message": "Ticket updated successfully",
-#         "ticket data": Ticket.id == id
-#     }
+      
+        return {
+         "ticket data:" : Ticket.id
+        }
+    
+@app.put("/update/:id")
+def update_ticket(id: int, item: Ticket):
+    for id in Ticket:
+        if(Ticket.id != id):
+            return {
+                "message": "Ticket not found"
+            }
+        # replace the ticket with the new item
+        for id in Ticket:
+            if(Ticket.id == id):
+                Ticket.id = item.id
+                Ticket.title = item.title
+                Ticket.description = item.description
+                break
+        
+        
+    return {
+        "message": "Ticket updated successfully",
+        "ticket data": Ticket.id == id
+    }
     
