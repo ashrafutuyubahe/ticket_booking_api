@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from src.Dto.add_Item_Dto import Add_Item
+from src.Dto.update_Item_Dto import update_item
+
 
 app = FastAPI()
 
@@ -45,7 +47,7 @@ def get_ticket(id: int):
 
 
 @app.put("/update/{id}")
-def update_ticket(id: int, item: Ticket):
+def update_ticket(id: int, item: update_item):
     for t in tickets:
         if(t.id == id):
             t.title = item.title
