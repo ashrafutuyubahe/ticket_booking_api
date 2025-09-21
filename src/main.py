@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+tickets = []
 
 class Ticket(BaseModel):
     id: int
@@ -17,44 +18,38 @@ def welcome():
 
 @app.post('/addTicket')
 def addTicket(Item:Ticket):
-    Ticket.append(Item)
-
+    tickets.append(Item)
     return {"message": "Ticket added successfully","ticket":Item}
 
 @app.get('/tickets')
 def get_tickets():
-    return {"tickets": "List of all tickets", "data": Ticket}
+    return {"tickets": "List of all tickets", "data": tickets}
 
-@app.get("/ticket/:id")
+@app.get("/ticket/{id}")
 def get_ticket(id: int):
-    if(Ticket.id != id):
-        return {
-            "message": "Ticket not found"
-        }
-    
-      
-        return {
-         "ticket data:" : Ticket.id
-        }
-    
-@app.put("/update/:id")
+      for t in tickets:
+          if(t.id == id):
+              return {
+                  "message": "Ticket found",
+                  "ticket data": t
+              }
+      return {
+           "message": "Ticket not found"
+       }
+
+
+@app.put("/update/{id}")
 def update_ticket(id: int, item: Ticket):
-    for id in Ticket:
-        if(Ticket.id != id):
+    for t in tickets:
+        if(t.id == id):
+            t.title = item.title
+            t.description = item.description
             return {
-                "message": "Ticket not found"
+                "message": "Ticket updated successfully",
+                "ticket data": t
             }
-        # replace the ticket with the new item
-        for id in Ticket:
-            if(Ticket.id == id):
-                Ticket.id = item.id
-                Ticket.title = item.title
-                Ticket.description = item.description
-                break
-        
-        
     return {
-        "message": "Ticket updated successfully",
-        "ticket data": Ticket.id == id
-    }
+        "message": "Ticket not found"   
+           }
+
     
