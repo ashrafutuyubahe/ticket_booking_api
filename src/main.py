@@ -18,7 +18,10 @@ def welcome():
 
 @app.post('/book_Ticket')
 def addTicket(Item:Add_Item):
-    tickets.append(Item)
+    ticket = Ticket(
+        id=len(tickets)+1, title=Item.title, description=Item.description
+    )
+    tickets.append(ticket)
     return {"message": "Ticket added successfully","ticket":Item}
 
 
