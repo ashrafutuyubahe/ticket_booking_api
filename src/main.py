@@ -44,49 +44,82 @@ def addTicket(Item:Add_Item,db:Session=Depends(get_db)):
 
 
 @app.get('/tickets')
-def get_tickets():
+def get_tickets(db:Session=Depends(get_db)):
+    # return {"tickets": "List of all tickets", "data": tickets}
+    tickets= db.query(TicketModel).all()
+    if not tickets:
+        return {"message": "No tickets found"}
     return {"tickets": "List of all tickets", "data": tickets}
 
+
 @app.get("/ticket/{id}")
-def get_ticket(id: int):
-      for t in tickets:
-          if(t.id == id):
-              return {
-                  "message": "Ticket found",
-                  "ticket data": t
+def get_ticket(id: int,db:Session=Depends(get_db)): 
+    #   for t in tickets:
+    #       if(t.id == id):
+    #           return {
+    #               "message": "Ticket found",
+    #               "ticket data": t
                   
-              }
-      return {
-           "message": "Ticket not found"
-       }
+    #           }
+    #   return {
+    #        "message": "Ticket not found"
+    #    }         // in memory persistance
+    
+    db_ticket= db.query(TicketModel).filter(TicketModel.id==id).first()
+    if not db_ticket:
+        raise HTTPException(status_code=404,detail="Ticket not found")
+    return {
+        "message": "Ticket found",
+        "ticket data": db_ticket
+    }
+    
 
 
 @app.put("/update/{id}")
-def update_ticket(id: int, item: update_item):
-    for t in tickets:
-        if(t.id == id):
-            t.title = item.title
-            t.description = item.description
-            return {
-                "message": "Ticket updated successfully",
-                "ticket data": t
-            }
-    return {
-        "message": "Ticket not found"   
-           }
+def update_ticket(id: int, item: update_item,db:Session=Depends(get_db)):
+    # for t in tickets:
+    #     if(t.id == id):
+    #         t.title = item.title
+    #         t.description = item.description
+    #         return {
+    #             "message": "Ticket updated successfully",
+    #             "ticket data": t
+    #         }
+    # return {
+    #     "message": "Ticket not found"   
+    #        }
 
+    db_ticket= db.query(TicketModel).filter(TicketModel.id==id).first()
+    if not db_ticket:
+        raise HTTPException(status_code=404,detail="Ticket not found")
+    setattr(db_ticket,"title",item.title)
+    setattr(db_ticket,"description",item.description)
+    db.commit()
+    return {
+        "message": "Ticket updated successfully",
+        "ticket data": db.query(TicketModel).filter(TicketModel.id==id).first()
+    }
+    
 
 @app.delete("/unbook/{id}")
-def delete_ticket(id: int):
+def delete_ticket(id: int,db:Session=Depends(get_db)):
         
-         for t in tickets:
+    #      for t in tickets:
              
-          if(t.id == id):
-             tickets.remove(t)
-             return {
-                 "message": "Ticket deleted successfully"
-             }
-         return {
-        "message": "Ticket not found"
+    #       if(t.id == id):
+    #          tickets.remove(t)
+    #          return {
+    #              "message": "Ticket deleted successfully"
+    #          }
+    #      return {
+    #     "message": "Ticket not found"      // in memory persistance
+    # }
+    db_ticket= db.query(TicketModel).filter(TicketModel.id==id).first()
+    if not db_ticket:
+      raise HTTPException(status_code=404,detail="Ticket not found")
+    db.delete(db_ticket)
+    db.commit()
+    
+    return {
+        "message": "Ticket deleted successfully"
     }
-
