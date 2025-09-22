@@ -1,10 +1,19 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+
+from fastapi import FastAPI, Depends, HTTPException
 from src.Dto.add_Item_Dto import Add_Item
 from src.Dto.update_Item_Dto import update_item
+from sqlalchemy.orm import Session
+from src.models.Tickets import Ticket as TicketModel
+from src.db.database import Base, engine
+from pydantic import BaseModel
+from src.config.db_connection import get_db
 
 
 app = FastAPI()
+
+
+
+Base.metadata.create_all(bind=engine)
 
 tickets = []
 
@@ -19,12 +28,18 @@ def welcome():
     return {"message": "Welcome to FastAPI application"}
 
 @app.post('/book_Ticket')
-def addTicket(Item:Add_Item):
-    ticket = Ticket(
-        id=len(tickets)+1, title=Item.title, description=Item.description
-    )
-    tickets.append(ticket)
-    return {"message": "Ticket added successfully","ticket":Item}
+def addTicket(Item:Add_Item,db:Session=Depends(get_db)):
+    # ticket = Ticket(
+    #     id=len(tickets)+1, title=Item.title, description=Item.description
+    # )
+    # tickets.append(ticket)
+    # return {"message": "Ticket added successfully","ticket":Item}  /// in memory persistance
+    
+    db_ticket= TicketModel(title=Item.title,description=Item.description)
+    db.add(db_ticket)
+    db.commit()
+    db.refresh(db_ticket)
+    return {"message": "Ticket added successfully","ticket":db_ticket} 
 
 
 
